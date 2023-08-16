@@ -90,6 +90,25 @@
             text-decoration: none;
             border-radius: 3px;
         }
+        /* Additional styles for the notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #f44336;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .notification button {
+            background-color: transparent;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
@@ -151,7 +170,55 @@
                 sales: sales,
                 totalProfit: total.toFixed(2)
             };
+
+            // Store the updated dailyReports in localStorage
+            try {
+                localStorage.setItem('dailyReports', JSON.stringify(dailyReports));
+            } catch (error) {
+                console.error("Error storing data in localStorage:", error);
+            }
         }
+
+        function loadStoredData() {
+            var storedReports = localStorage.getItem('dailyReports');
+            if (storedReports) {
+                dailyReports = JSON.parse(storedReports);
+            }
+        }
+
+        // Call this function when the page loads
+        loadStoredData();
+
+        function showStorageNotification(usedStorage, totalStorage) {
+            var notification = document.createElement('div');
+            notification.classList.add('notification');
+            notification.textContent = `Your data storage is almost full. Used: ${usedStorage} MB / Total: ${totalStorage} MB`;
+
+            var closeButton = document.createElement('button');
+            closeButton.textContent = 'Dismiss';
+            closeButton.addEventListener('click', function() {
+                document.body.removeChild(notification);
+            });
+
+            notification.appendChild(closeButton);
+            document.body.appendChild(notification);
+
+            setTimeout(function() {
+                document.body.removeChild(notification);
+            }, 8000); // Display the notification for 8 seconds
+        }
+
+        function checkStorageCapacity() {
+            var usedStorage = (JSON.stringify(localStorage)).length / 1024 / 1024; // Convert to MB
+            var totalStorage = (1024 * 1024 * 5); // 5 MB (example limit for localStorage)
+
+            if (usedStorage >= totalStorage * 0.8) { // Display notification when 80% of storage is used
+                showStorageNotification(usedStorage.toFixed(2), totalStorage);
+            }
+        }
+
+        // Call this function to check storage capacity when necessary
+        checkStorageCapacity();
 
         function fadeInEffect(element) {
             var opacity = 0;
@@ -247,6 +314,7 @@
             var dailyReportDiv = document.getElementById("daily-report");
             dailyReportDiv.innerHTML = "";
             dailyReportDiv.classList.add("hide");
+            localStorage.removeItem('dailyReports');
         }
 
         function clearMonthlyReport() {
