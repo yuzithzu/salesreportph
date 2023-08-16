@@ -51,6 +51,12 @@
         .button:hover {
             background-color: #0056b3;
         }
+        .content-container {
+            display: none;
+        }
+        .content-container.active {
+            display: block;
+        }
         .content {
             margin-top: 20px;
             padding: 20px;
@@ -58,12 +64,6 @@
             border-radius: 10px;
             background-color: #f9f9f9;
             text-align: left;
-            display: none;
-            transition: opacity 0.3s;
-            position: relative;
-        }
-        .content.active {
-            display: block;
         }
         .back-button {
             margin-top: 10px;
@@ -78,13 +78,16 @@
             <a class="button" onclick="loadContent('salon')">SalonBlackPnk</a>
             <a class="button" onclick="loadContent('juice')">King Juice</a>
         </div>
-        <div class="content" id="content">
-            <button class="back-button" onclick="goBack()">Back to Front Page</button>
+        <div class="content-container" id="content-container">
+            <div class="content" id="content">
+                <button class="back-button" onclick="goBack()">Back to Front Page</button>
+            </div>
         </div>
     </div>
     
     <script>
         var containerDiv = document.querySelector(".container");
+        var contentContainerDiv = document.getElementById("content-container");
         var contentDiv = document.getElementById("content");
         var backButton = document.querySelector(".back-button");
         var previousContent = "";
@@ -102,8 +105,8 @@
                 fetch('salonblackpnkreport.html')
                     .then(response => response.text())
                     .then(data => {
-                        containerDiv.innerHTML = data;
-                        contentDiv.classList.add("active");
+                        contentDiv.innerHTML = data;
+                        contentContainerDiv.classList.add("active");
                         backButton.style.display = 'block';
                         activeButton = document.querySelector(".button[onclick='loadContent(\'salon\')']");
                         activeButton.classList.add("active");
@@ -113,8 +116,8 @@
                 fetch('juiceking.html')
                     .then(response => response.text())
                     .then(data => {
-                        containerDiv.innerHTML = data;
-                        contentDiv.classList.add("active");
+                        contentDiv.innerHTML = data;
+                        contentContainerDiv.classList.add("active");
                         backButton.style.display = 'block';
                         activeButton = document.querySelector(".button[onclick='loadContent(\'juice\')']");
                         activeButton.classList.add("active");
@@ -124,8 +127,8 @@
         }
         
         function goBack() {
+            contentContainerDiv.classList.remove("active");
             containerDiv.innerHTML = previousContent;
-            contentDiv.classList.remove("active");
             backButton.style.display = 'none';
             document.querySelector(".button[onclick='loadContent(\'salon\')']").style.display = 'block';
             document.querySelector(".button[onclick='loadContent(\'juice\')']").style.display = 'block';
