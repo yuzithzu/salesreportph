@@ -84,13 +84,14 @@
     </div>
     
     <script>
+        var containerDiv = document.querySelector(".container");
         var contentDiv = document.getElementById("content");
         var backButton = document.querySelector(".back-button");
         var previousContent = "";
         var activeButton = null;
 
         function loadContent(source) {
-            previousContent = contentDiv.innerHTML;
+            previousContent = containerDiv.innerHTML;
             var htmlContent = '';
 
             if (activeButton) {
@@ -101,7 +102,7 @@
                 fetch('salonblackpnkreport.html')
                     .then(response => response.text())
                     .then(data => {
-                        contentDiv.innerHTML = data;
+                        containerDiv.innerHTML = data;
                         contentDiv.classList.add("active");
                         backButton.style.display = 'block';
                         activeButton = document.querySelector(".button[onclick='loadContent(\'salon\')']");
@@ -112,7 +113,7 @@
                 fetch('juiceking.html')
                     .then(response => response.text())
                     .then(data => {
-                        contentDiv.innerHTML = data;
+                        containerDiv.innerHTML = data;
                         contentDiv.classList.add("active");
                         backButton.style.display = 'block';
                         activeButton = document.querySelector(".button[onclick='loadContent(\'juice\')']");
@@ -123,8 +124,8 @@
         }
         
         function goBack() {
+            containerDiv.innerHTML = previousContent;
             contentDiv.classList.remove("active");
-            contentDiv.innerHTML = previousContent;
             backButton.style.display = 'none';
             document.querySelector(".button[onclick='loadContent(\'salon\')']").style.display = 'block';
             document.querySelector(".button[onclick='loadContent(\'juice\')']").style.display = 'block';
