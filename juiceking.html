@@ -65,6 +65,8 @@
             padding: 15px;
             margin-top: 20px;
             font-size: 14px;
+            display: none;
+            opacity: 0;
         }
         .report strong {
             display: block;
@@ -139,13 +141,29 @@
             var sales = parseFloat(document.getElementById("sales").value);
             var expenses = parseFloat(document.getElementById("expenses").value);
             var total = sales - expenses;
-            document.getElementById("total").innerHTML = "<strong>Total Profit:</strong> &#x20B1;" + total.toFixed(2);
+            var totalElement = document.getElementById("total");
+            totalElement.innerHTML = "<strong>Total Profit:</strong> &#x20B1;" + total.toFixed(2);
+            totalElement.style.display = "block";
+            fadeInEffect(totalElement);
 
             var selectedDate = document.getElementById("datepicker").value;
             dailyReports[selectedDate] = {
                 sales: sales,
                 totalProfit: total.toFixed(2)
             };
+        }
+
+        function fadeInEffect(element) {
+            var opacity = 0;
+            element.style.display = "block";
+            var fadeInInterval = setInterval(function () {
+                if (opacity < 1) {
+                    opacity += 0.1;
+                    element.style.opacity = opacity;
+                } else {
+                    clearInterval(fadeInInterval);
+                }
+            }, 100);
         }
 
         function generateDailyReport() {
@@ -160,11 +178,7 @@
             hideReports();
             dailyReportDiv.innerHTML = dailyReport;
             dailyReportDiv.classList.remove("hide");
-        }
-
-        function clearDailyReport() {
-            dailyReports = {};
-            document.getElementById("daily-report").innerHTML = "";
+            fadeInEffect(dailyReportDiv);
         }
 
         function generateMonthlyReport() {
@@ -200,6 +214,7 @@
 
             monthlyReportDiv.innerHTML = monthlyReport;
             monthlyReportDiv.classList.remove("hide");
+            fadeInEffect(monthlyReportDiv);
         }
 
         function generateYearlyReport() {
@@ -224,16 +239,28 @@
 
             yearlyReportDiv.innerHTML = yearlyReport;
             yearlyReportDiv.classList.remove("hide");
+            fadeInEffect(yearlyReportDiv);
+        }
+
+        function clearDailyReport() {
+            dailyReports = {};
+            var dailyReportDiv = document.getElementById("daily-report");
+            dailyReportDiv.innerHTML = "";
+            dailyReportDiv.classList.add("hide");
         }
 
         function clearMonthlyReport() {
             monthlyReports = {};
-            document.getElementById("monthly-report").innerHTML = "";
+            var monthlyReportDiv = document.getElementById("monthly-report");
+            monthlyReportDiv.innerHTML = "";
+            monthlyReportDiv.classList.add("hide");
         }
 
         function clearYearlyReport() {
             yearlyReports = {};
-            document.getElementById("yearly-report").innerHTML = "";
+            var yearlyReportDiv = document.getElementById("yearly-report");
+            yearlyReportDiv.innerHTML = "";
+            yearlyReportDiv.classList.add("hide");
         }
 
         function hideReports() {
