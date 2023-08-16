@@ -96,25 +96,28 @@
             }
 
             if (source === 'salon') {
-                htmlContent = `
-                    <h2>SalonBlackPnk</h2>
-                    <a class="button" href="salonblackpnkreport.html" target="_blank">SalonBlackPnk</a>
-                `;
-                activeButton = document.querySelector(".button[onclick='loadContent(\'salon\')']");
-                document.querySelector(".button[onclick='loadContent(\'juice\')']").style.display = 'none';
+                fetch('salonblackpnkreport.html')
+                    .then(response => response.text())
+                    .then(data => {
+                        contentDiv.innerHTML = data;
+                        contentDiv.classList.add("active");
+                        backButton.style.display = 'block';
+                        activeButton = document.querySelector(".button[onclick='loadContent(\'salon\')']");
+                        activeButton.classList.add("active");
+                        document.querySelector(".button[onclick='loadContent(\'juice\')']").style.display = 'none';
+                    });
             } else if (source === 'juice') {
-                htmlContent = `
-                    <h2>King Juice</h2>
-                    <a class="button" href="juiceking.html" target="_blank">King Juice</a>
-                `;
-                activeButton = document.querySelector(".button[onclick='loadContent(\'juice\')']");
-                document.querySelector(".button[onclick='loadContent(\'salon\')']").style.display = 'none';
+                fetch('juiceking.html')
+                    .then(response => response.text())
+                    .then(data => {
+                        contentDiv.innerHTML = data;
+                        contentDiv.classList.add("active");
+                        backButton.style.display = 'block';
+                        activeButton = document.querySelector(".button[onclick='loadContent(\'juice\')']");
+                        activeButton.classList.add("active");
+                        document.querySelector(".button[onclick='loadContent(\'salon\')']").style.display = 'none';
+                    });
             }
-
-            contentDiv.innerHTML = htmlContent;
-            contentDiv.classList.add("active");
-            backButton.style.display = 'block';
-            activeButton.classList.add("active");
         }
         
         function goBack() {
