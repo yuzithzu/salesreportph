@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculator-style Sales Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 400px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input[type="date"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        .button-group {
+            text-align: center;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .button-group button {
+            flex: 1;
+            padding: 8px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .report {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .report strong {
+            display: block;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .date-time {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+            color: #777;
+        }
+        /* Add a class to hide report divs */
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">SALES REPORT</div>
+        <div class="form-group">
+            <label for="datepicker">Select Date:</label>
+            <input type="date" id="datepicker">
+        </div>
+        <div class="form-group">
+            <label for="sales">Sales (&#x20B1;):</label>
+            <input type="number" id="sales" step="0.01">
+        </div>
+        <div class="form-group">
+            <label for="expenses">Expenses (&#x20B1;):</label>
+            <input type="number" id="expenses" step="0.01">
+        </div>
+        <div class="button-group">
+            <button onclick="calculateTotal()">Calculate Total Profit</button>
+        </div>
+        <div id="total" class="report"></div>
+        <div class="button-group">
+            <button onclick="generateDailyReport()">Generate Daily Report</button>
+            <button onclick="clearDailyReport()">Clear Daily Report</button>
+        </div>
+        <div class="report hide" id="daily-report"></div>
+        <div class="button-group">
+            <button onclick="generateMonthlyReport()">Generate Monthly Report</button>
+            <button onclick="clearMonthlyReport()">Clear Monthly Report</button>
+        </div>
+        <div class="report hide" id="monthly-report"></div>
+        <div class="button-group">
+            <button onclick="generateYearlyReport()">Generate Yearly Report</button>
+            <button onclick="clearYearlyReport()">Clear Yearly Report</button>
+        </div>
+        <div class="report hide" id="yearly-report"></div>
+        <div class="date-time" id="date-time"></div>
+    </div>
+    
+    <script>
+        var dailyReports = {};
+        var monthlyReports = {};
+        var yearlyReports = {};
+        
+        function calculateTotal() {
+            var sales = parseFloat(document.getElementById("sales").value);
+            var expenses = parseFloat(document.getElementById("expenses").value);
+            var total = sales - expenses;
+            document.getElementById("total").innerHTML = "<strong>Total Profit:</strong> &#x20B1;" + total.toFixed(2);
+            
+            var selectedDate = document.getElementById("datepicker").value;
+            dailyReports[selectedDate] = {
+                sales: sales,
+                totalProfit: total.toFixed(2)
+            };
+        }
+        
+        function generateDailyReport() {
+            var dailyReportDiv = document.getElementById("daily-report");
+            var dailyReport = "";
+
+            for (var date in dailyReports) {
+                dailyReport += "<strong>Date: " + date + "</strong><br>";
+                dailyReport += "Total Profit: &#x20B1;" + dailyReports[date].totalProfit + "<br><br>";
+            }
+
+            hideReports();
+            dailyReportDiv.innerHTML = dailyReport;
+            dailyReportDiv.classList.remove("hide");
+        }
+        
+        function generateMonthlyReport() {
+            var monthlyReportDiv = document.getElementById("monthly-report");
+            var monthlyReport = "";
+
+            for (var date in dailyReports) {
+                var parts = date.split("-");
+                var year = parts[0];
+                var month = parts[1];
+                var totalProfit = parseFloat(dailyReports[date].totalProfit);
+
+                if (!monthlyReports[year]) {
+                    monthlyReports[year] = {};
+                }
+
+                if (!monthlyReports[year][month]) {
+                    monthlyReports[year][month] = 0;
+                }
+
+                monthlyReports[year][month] += totalProfit;
+            }
+
+            hideReports();
+            monthlyReport += "<strong>Monthly Report</strong><br>";
+            for (var year in monthlyReports) {
+                monthlyReport += "<strong>" + year + "</strong><br>";
+                for (var month in monthlyReports[year]) {
+                    var monthName = getMonthName(parseInt(month));
+                    monthlyReport += monthName + ": &#x20B1;" + monthlyReports[year][month].toFixed(2) + "<br>";
+                }
+            }
+
+            monthlyReportDiv.innerHTML = monthlyReport;
+            monthlyReportDiv.classList.remove("hide");
+        }
+
+        function generateYearlyReport() {
+            var yearlyReportDiv = document.getElementById("yearly-report");
+            var yearlyReport = "";
+
+            for (var year in monthlyReports) {
+                if (!yearlyReports[year]) {
+                    yearlyReports[year] = 0;
+                }
+
+                for (var month in monthlyReports[year]) {
+                    yearlyReports[year] += monthlyReports[year][month];
+                }
+            }
+
+            hideReports();
+            yearlyReport += "<strong>Yearly Report</strong><br>";
+            for (var year in yearlyReports) {
+                yearlyReport += "<strong>" + year + "</strong>: &#x20B1;" + yearlyReports[year].toFixed(2) + "<br>";
+            }
+
+            yearlyReportDiv.innerHTML = yearlyReport;
+            yearlyReportDiv.classList.remove("hide");
+        }
+
+        function clearDailyReport() {
+            dailyReports = {};
+            document.getElementById("daily-report").innerHTML = "";
+        }
+
+        function clearMonthlyReport() {
+            monthlyReports = {};
+            document.getElementById("monthly-report").innerHTML = "";
+        }
+
+        function clearYearlyReport() {
+            yearlyReports = {};
+            document.getElementById("yearly-report").innerHTML = "";
+        }
+
+        function hideReports() {
+            var reportDivs = document.querySelectorAll(".report");
+            for (var i = 0; i < reportDivs.length; i++) {
+                if (reportDivs[i].id !== "total") {
+                    reportDivs[i].classList.add("hide");
+                }
+            }
+        }
+
+        function getMonthName(month) {
+            var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            return monthNames[month - 1];
+        }
+
+        function updateDateTime() {
+            var now = new Date();
+            var formattedDateTime = now.toLocaleString();
+            document.getElementById("date-time").innerHTML = formattedDateTime;
+        }
+
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+    </script>
+</body>
+</html>
