@@ -45,6 +45,9 @@
             text-decoration: none;
             transition: background-color 0.3s;
         }
+        .button.active {
+            background-color: #0056b3;
+        }
         .button:hover {
             background-color: #0056b3;
         }
@@ -56,6 +59,10 @@
             background-color: #f9f9f9;
             text-align: left;
             display: none;
+            transition: opacity 0.3s;
+        }
+        .content.active {
+            display: block;
         }
         .back-button {
             margin-top: 10px;
@@ -78,30 +85,47 @@
         var contentDiv = document.getElementById("content");
         var backButton = document.querySelector(".back-button");
         var previousContent = "";
+        var activeButton = null;
 
         function loadContent(source) {
             previousContent = contentDiv.innerHTML;
             var htmlContent = '';
+
+            if (activeButton) {
+                activeButton.classList.remove("active");
+            }
+
             if (source === 'salon') {
                 htmlContent = `
                     <h2>SalonBlackPnk</h2>
                     <a class="button" href="salonblackpnkreport.html" target="_blank">SalonBlackPnk</a>
                 `;
+                activeButton = document.querySelector(".button[onclick='loadContent(\'salon\')']");
+                document.querySelector(".button[onclick='loadContent(\'juice\')']").style.display = 'none';
             } else if (source === 'juice') {
                 htmlContent = `
                     <h2>King Juice</h2>
                     <a class="button" href="juiceking.html" target="_blank">King Juice</a>
                 `;
+                activeButton = document.querySelector(".button[onclick='loadContent(\'juice\')']");
+                document.querySelector(".button[onclick='loadContent(\'salon\')']").style.display = 'none';
             }
+
             contentDiv.innerHTML = htmlContent;
-            contentDiv.style.display = 'block';
+            contentDiv.classList.add("active");
             backButton.style.display = 'block';
+            activeButton.classList.add("active");
         }
         
         function goBack() {
+            contentDiv.classList.remove("active");
             contentDiv.innerHTML = previousContent;
-            contentDiv.style.display = 'none';
             backButton.style.display = 'none';
+            document.querySelector(".button[onclick='loadContent(\'salon\')']").style.display = 'block';
+            document.querySelector(".button[onclick='loadContent(\'juice\')']").style.display = 'block';
+            if (activeButton) {
+                activeButton.classList.remove("active");
+            }
         }
     </script>
 </body>
