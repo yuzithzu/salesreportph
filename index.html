@@ -60,6 +60,7 @@
             text-align: left;
             display: none;
             transition: opacity 0.3s;
+            position: relative;
         }
         .content.active {
             display: block;
@@ -77,8 +78,9 @@
             <a class="button" onclick="loadContent('salon')">SalonBlackPnk</a>
             <a class="button" onclick="loadContent('juice')">King Juice</a>
         </div>
-        <div class="content" id="content"></div>
-        <button class="back-button" onclick="goBack()">Back to Front Page</button>
+        <div class="content" id="content">
+            <button class="back-button" onclick="goBack()">Back to Front Page</button>
+        </div>
     </div>
     
     <script>
