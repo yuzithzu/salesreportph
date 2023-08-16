@@ -55,7 +55,10 @@
             border-radius: 10px;
             background-color: #f9f9f9;
             text-align: left;
-            /* Updated display property */
+            display: none;
+        }
+        .back-button {
+            margin-top: 10px;
             display: none;
         }
     </style>
@@ -64,18 +67,20 @@
     <div class="container">
         <div class="title">Sales Report</div>
         <div class="button-group">
-            <!-- Updated buttons with removed href attribute -->
             <a class="button" onclick="loadContent('salon')">SalonBlackPnk</a>
             <a class="button" onclick="loadContent('juice')">King Juice</a>
         </div>
-        <!-- Content area -->
         <div class="content" id="content"></div>
+        <button class="back-button" onclick="goBack()">Back to Front Page</button>
     </div>
     
     <script>
         var contentDiv = document.getElementById("content");
-        
+        var backButton = document.querySelector(".back-button");
+        var previousContent = "";
+
         function loadContent(source) {
+            previousContent = contentDiv.innerHTML;
             var htmlContent = '';
             if (source === 'salon') {
                 htmlContent = `
@@ -89,7 +94,14 @@
                 `;
             }
             contentDiv.innerHTML = htmlContent;
-            contentDiv.style.display = 'block'; // Ipinapakita ang content area
+            contentDiv.style.display = 'block';
+            backButton.style.display = 'block';
+        }
+        
+        function goBack() {
+            contentDiv.innerHTML = previousContent;
+            contentDiv.style.display = 'none';
+            backButton.style.display = 'none';
         }
     </script>
 </body>
