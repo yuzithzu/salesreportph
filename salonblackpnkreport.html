@@ -96,7 +96,7 @@
             flex-direction: column;
             align-items: center;
             overflow-x: auto;
-            overflow-y: auto; /* Add this line for vertical scrollbar */
+            overflow-y: auto;
             max-height: 300px;
         }
         
@@ -194,15 +194,7 @@
                             <th>Jan</th>
                             <th>Feb</th>
                             <th>Mar</th>
-                            <th>Apr</th>
-                            <th>May</th>
-                            <th>Jun</th>
-                            <th>Jul</th>
-                            <th>Aug</th>
-                            <th>Sep</th>
-                            <th>Oct</th>
-                            <th>Nov</th>
-                            <th>Dec</th>
+                            <!-- ... Include other months ... -->
                         </tr>
                     </thead>
                     <tbody id="monthlyTotalsBody"></tbody>
@@ -273,25 +265,23 @@
             const monthlyTotalsBody = document.getElementById("monthlyTotalsBody");
             monthlyTotalsBody.innerHTML = "";
             
-            let salesTotalsByPerson = {};
+            let salesTotalsByPerson = {
+                "anna": Array(12).fill(0),
+                "alma": Array(12).fill(0),
+                "jennifer": Array(12).fill(0)
+            };
             
             salesData.forEach((record) => {
                 const person = record.person;
                 const monthIndex = new Date(record.date).getMonth();
                 
-                if (!salesTotalsByPerson[person]) {
-                    salesTotalsByPerson[person] = Array(12).fill(0);
-                }
-                
                 salesTotalsByPerson[person][monthIndex] += record.amount;
             });
             
             for (const person in salesTotalsByPerson) {
-                if (salesTotalsByPerson[person].some(total => total > 0)) {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `<td>${person}</td>${getMonthlyTotalCells(salesTotalsByPerson[person])}`;
-                    monthlyTotalsBody.appendChild(row);
-                }
+                const row = document.createElement("tr");
+                row.innerHTML = `<td>${person}</td>${getMonthlyTotalCells(salesTotalsByPerson[person])}`;
+                monthlyTotalsBody.appendChild(row);
             }
         }
         
