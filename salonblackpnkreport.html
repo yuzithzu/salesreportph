@@ -243,6 +243,11 @@
                 </div>
             </div>
         </div>
+
+        <!-- Back button to index -->
+        <div class="form-group">
+            <button onclick="goToIndex()">Back to Index</button>
+        </div>
     </div>
     
     <script>
@@ -347,6 +352,10 @@
                 cells += `<td>${total.toFixed(2)}</td>`;
             }
             return cells;
+        }
+        
+        function goToIndex() {
+            window.location.href = "index.html"
         }
         
         updateSalesTable(); // Initial update of sales table
