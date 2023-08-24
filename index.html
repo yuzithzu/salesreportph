@@ -3,63 +3,63 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SALE'S SUMMARY</title>
+<title>Gaming Insights</title>
 <style>
   body {
-    font-family: Arial, sans-serif;
+    font-family: 'Lato', Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, #0084FF, #ffffff); /* Blue Messenger-like gradient background */
+    background: #121212; /* Dark background */
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
   }
-  .calculator {
+  .insights {
     max-width: 400px;
-    padding: 20px;
-    background-color: #ffffff; /* White background */
-    border: 2px solid #e0e0e0; /* Light gray outline */
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center; /* Centering the content */
-    text-transform: uppercase; /* Capitalize all text */
-  }
-  .calculator h1 {
+    padding: 30px;
+    background-color: #1c1c1c; /* Dark gray background */
+    border-radius: 12px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.4);
     text-align: center;
-    margin-bottom: 20px;
-    font-weight: bold; /* Making the title bold */
-    color: #333333; /* Dark gray title color */
   }
-  .calculator-buttons {
+  .insights h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #ffffff; /* White title color */
+  }
+  .button-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 20px;
+    margin-top: 30px;
   }
   .button {
-    padding: 10px 20px;
-    background-color: #0084FF; /* Blue Messenger-like button color */
-    color: #ffffff;
+    padding: 12px 24px;
+    background-color: #ff9900; /* Orange button color */
+    color: #fff;
     text-decoration: none;
-    border-radius: 6px;
+    border-radius: 10px;
     text-align: center;
-    transition: background-color 0.3s ease;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+    font-weight: bold;
+    letter-spacing: 1px;
   }
   .button:hover {
-    background-color: #0066CC; /* Darker blue on hover */
+    background-color: #ff6600; /* Darker orange on hover */
+    transform: scale(1.05);
   }
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="calculator">
-  <h1>Sale's</h1> <!-- Updated header title -->
-  <div class="calculator-buttons">
-    <a class="button" href="juiceking.html" target="_blank">Juice King</a>
-    <a class="button" href="salonblackpnkreport.html" target="_blank">SalonBlackPnk</a>
+<div class="insights">
+  <h1>Sales Report</h1>
+  <div class="button-container">
+    <a class="button" href="juiceking.html" target="_blank">Juice King Analytics</a>
+    <a class="button" href="salonblackpnkreport.html" target="_blank">SalonBlackPnk Performance</a>
   </div>
 </div>
 </body>
