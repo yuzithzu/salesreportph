@@ -97,12 +97,13 @@
             align-items: center;
             overflow-x: auto;
             overflow-y: auto;
-            max-height: 300px;
+            max-height: 800px; /* Adjust this value as needed */
+            width: 100%; /* Allow the container to expand to the width of its parent */
         }
         
         .monthly-totals-table {
-            width: 100%;
-            min-width: 600px; /* Adjust this value as needed */
+            width: auto;
+            max-width: none;
             margin-top: 20px;
         }
         
@@ -111,6 +112,7 @@
             border: 1px solid #ccc;
             padding: 8px;
             text-align: center;
+            white-space: normal; /* Allow content to wrap */
         }
         
         .monthly-totals-table th {
@@ -127,7 +129,9 @@
         }
         
         .show-monthly {
-            display: block;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
         .generate-button {
@@ -194,7 +198,15 @@
                             <th>Jan</th>
                             <th>Feb</th>
                             <th>Mar</th>
-                            <!-- ... Include other months ... -->
+                            <th>Apr</th>
+                            <th>May</th>
+                            <th>Jun</th>
+                            <th>Jul</th>
+                            <th>Aug</th>
+                            <th>Sep</th>
+                            <th>Oct</th>
+                            <th>Nov</th>
+                            <th>Dec</th>
                         </tr>
                     </thead>
                     <tbody id="monthlyTotalsBody"></tbody>
@@ -279,9 +291,13 @@
             });
             
             for (const person in salesTotalsByPerson) {
-                const row = document.createElement("tr");
-                row.innerHTML = `<td>${person}</td>${getMonthlyTotalCells(salesTotalsByPerson[person])}`;
-                monthlyTotalsBody.appendChild(row);
+                const totalSales = salesTotalsByPerson[person].reduce((total, amount) => total + amount, 0);
+                
+                if (totalSales > 0) {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `<td>${person}</td>${getMonthlyTotalCells(salesTotalsByPerson[person])}`;
+                    monthlyTotalsBody.appendChild(row);
+                }
             }
         }
         
@@ -293,7 +309,7 @@
             return cells;
         }
         
-        updateSalesTable();
+        updateSalesTable(); // Initial update of sales table
     </script>
 </body>
 </html>
