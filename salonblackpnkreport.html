@@ -169,6 +169,11 @@
             <label for="salesAmount">Enter Sales Amount:</label>
             <input type="number" id="salesAmount">
         </div>
+
+        <div class="form-group">
+            <label for="expensesAmount">Enter Expenses:</label>
+            <input type="number" id="expensesAmount">
+        </div>
         
         <div class="form-group">
             <button onclick="addSales()">Add Sales</button>
@@ -182,6 +187,8 @@
                         <th>Date</th>
                         <th>Salesperson</th>
                         <th>Sales Amount</th>
+                        <th>Expenses</th>
+                        <th>Result</th>
                         <th>Delete</th>
                     </tr>
                 </thead>
@@ -257,6 +264,7 @@
             const salesPerson = document.getElementById("salesPerson").value;
             const salesDate = document.getElementById("salesDate").value;
             const salesAmount = parseFloat(document.getElementById("salesAmount").value);
+            const expensesAmount = parseFloat(document.getElementById("expensesAmount").value) || 0;
             
             if (!salesDate || isNaN(salesAmount)) {
                 alert("Please enter valid data.");
@@ -266,7 +274,9 @@
             const salesRecord = {
                 date: salesDate,
                 person: salesPerson,
-                amount: salesAmount
+                amount: salesAmount,
+                expenses: expensesAmount,
+                result: salesAmount - expensesAmount
             };
             
             let salesData = JSON.parse(localStorage.getItem("salesData")) || [];
@@ -295,6 +305,8 @@
                     <td>${record.date}</td>
                     <td>${record.person}</td>
                     <td>${record.amount}</td>
+                    <td>${record.expenses}</td>
+                    <td>${record.result}</td>
                     <td><button onclick="deleteSales(${index})">Delete</button></td>
                 `;
                 tableBody.appendChild(row);
@@ -326,8 +338,8 @@
                 const person = record.person;
                 const monthIndex = new Date(record.date).getMonth();
     
-                salesTotalsByPerson[person][monthIndex] += record.amount;
-                salesTotalsByPerson["combined"][monthIndex] += record.amount;
+                salesTotalsByPerson[person][monthIndex] += record.amount - record.expenses;
+                salesTotalsByPerson["combined"][monthIndex] += record.amount - record.expenses;
             });
     
             for (const person in salesTotalsByPerson) {
