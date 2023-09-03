@@ -145,6 +145,38 @@
             cursor: pointer;
             margin-bottom: 10px;
         }
+
+        /* Revised Calculator Styles */
+        .calculator {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        button.calculator-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        /* Real-Time Clock Styles */
+        .clock {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -157,6 +189,7 @@
                 <option value="anna">Anna</option>
                 <option value="alma">Alma</option>
                 <option value="jennifer">Jennifer</option>
+                <option value="juice">Juice</option> <!-- Added Juice -->
             </select>
         </div>
         
@@ -169,12 +202,12 @@
             <label for="salesAmount">Enter Sales Amount:</label>
             <input type="number" id="salesAmount">
         </div>
-
+        
         <div class="form-group">
-            <label for="expensesAmount">Enter Expenses:</label>
+            <label for="expensesAmount">Enter Expenses Amount:</label>
             <input type="number" id="expensesAmount">
         </div>
-        
+
         <div class="form-group">
             <button onclick="addSales()">Add Sales</button>
         </div>
@@ -187,8 +220,8 @@
                         <th>Date</th>
                         <th>Salesperson</th>
                         <th>Sales Amount</th>
-                        <th>Expenses</th>
-                        <th>Result</th>
+                        <th>Expenses</th> <!-- Added Expenses Column -->
+                        <th>Result</th> <!-- Added Result Column -->
                         <th>Delete</th>
                     </tr>
                 </thead>
@@ -255,122 +288,187 @@
         <div class="form-group">
             <button onclick="goToIndex()">BACK</button>
         </div>
+
+        <!-- Revised Calculator -->
+        <div class="calculator">
+            <h2>Calculator</h2>
+            <input type="text" id="calcDisplay" readonly>
+            <div>
+                <button class="calculator-button" onclick="appendToCalcDisplay('1')">1</button>
+                <button class="calculator-button" onclick="appendToCalcDisplay('2')">2</button>
+                <button class="calculator-button" onclick="appendToCalcDisplay('3')">3</button>
+                <button class="calculator-button" onclick="appendToCalcDisplay('+')">+</button>
+            </div>
+            <div>
+                <button class="calculator-button" onclick="appendToCalcDisplay('4')">4</button>
+                <button class="calculator-button" onclick="appendToCalcDisplay('5')">5</button>
+                <button class="calculator-button" onclick="appendToCalcDisplay('6')">6</button>
+                <button class="calculator-button" onclick="appendToCalcDisplay('-')">-</button>
+            </div>
+            <div>
+                <button class="calculator-button" onclick="appendToCalcDisplay('7')">7</button>
+                <button class="calculator-button" onclick="appendToCalcDisplay('8')">8</button>
+                <button class="calculator-button" onclick="appendToCalcDisplay('9')">9</button>
+                <button class="calculator-button" onclick="appendToCalcDisplay('*')">*</button>
+            </div>
+            <div>
+                <button class="calculator-button" onclick="appendToCalcDisplay('0')">0</button>
+                <button class="calculator-button" onclick="clearCalcDisplay()">C</button>
+                <button class="calculator-button" onclick="calculate()">=</button>
+                <button class="calculator-button" onclick="appendToCalcDisplay('/')">/</button>
+            </div>
+        </div>
+
+        <!-- Real-Time Clock -->
+        <div class="clock" id="clock"></div>
     </div>
     
-    <script>
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        
-        function addSales() {
-            const salesPerson = document.getElementById("salesPerson").value;
-            const salesDate = document.getElementById("salesDate").value;
-            const salesAmount = parseFloat(document.getElementById("salesAmount").value);
-            const expensesAmount = parseFloat(document.getElementById("expensesAmount").value) || 0;
-            
-            if (!salesDate || isNaN(salesAmount)) {
-                alert("Please enter valid data.");
-                return;
-            }
-            
-            const salesRecord = {
-                date: salesDate,
-                person: salesPerson,
-                amount: salesAmount,
-                expenses: expensesAmount,
-                result: salesAmount - expensesAmount
-            };
-            
-            let salesData = JSON.parse(localStorage.getItem("salesData")) || [];
-            salesData.push(salesRecord);
-            localStorage.setItem("salesData", JSON.stringify(salesData));
-            
-            updateSalesTable();
+<script>
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    function addSales() {
+        const salesPerson = document.getElementById("salesPerson").value;
+        const salesDate = document.getElementById("salesDate").value;
+        const salesAmount = parseFloat(document.getElementById("salesAmount").value);
+        const expensesAmount = parseFloat(document.getElementById("expensesAmount").value); // Added Expenses Amount
+
+        if (!salesDate || isNaN(salesAmount)) {
+            alert("Please enter valid data.");
+            return;
         }
-        
-        function deleteSales(index) {
-            let salesData = JSON.parse(localStorage.getItem("salesData")) || [];
-            salesData.splice(index, 1);
-            localStorage.setItem("salesData", JSON.stringify(salesData));
-            
-            updateSalesTable();
-        }
-        
-        function updateSalesTable() {
-            const salesData = JSON.parse(localStorage.getItem("salesData")) || [];
-            const tableBody = document.getElementById("salesTableBody");
-            tableBody.innerHTML = "";
-            
-            salesData.forEach((record, index) => {
+
+        const salesRecord = {
+            date: salesDate,
+            person: salesPerson,
+            amount: salesAmount,
+            expenses: expensesAmount // Added Expenses Amount
+        };
+
+        let salesData = JSON.parse(localStorage.getItem("salesData")) || [];
+        salesData.push(salesRecord);
+        localStorage.setItem("salesData", JSON.stringify(salesData));
+
+        updateSalesTable();
+    }
+
+    function deleteSales(index) {
+        let salesData = JSON.parse(localStorage.getItem("salesData")) || [];
+        salesData.splice(index, 1);
+        localStorage.setItem("salesData", JSON.stringify(salesData));
+
+        updateSalesTable();
+    }
+
+    function updateSalesTable() {
+        const salesData = JSON.parse(localStorage.getItem("salesData")) || [];
+        const tableBody = document.getElementById("salesTableBody");
+        tableBody.innerHTML = "";
+
+        salesData.forEach((record, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${record.date}</td>
+                <td>${record.person}</td>
+                <td>${record.amount}</td>
+                <td>${record.expenses}</td> <!-- Added Expenses Column -->
+                <td>${record.amount - record.expenses}</td> <!-- Added Result Column -->
+                <td><button onclick="deleteSales(${index})">Delete</button></td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    function showMonthlyResults() {
+        updateMonthlyTotalsTable();
+        const monthlyResults = document.getElementById("monthlyResults");
+        monthlyResults.classList.add("show-monthly");
+    }
+
+    function updateMonthlyTotalsTable() {
+        const salesData = JSON.parse(localStorage.getItem("salesData")) || [];
+        const combinedMonthlyTotalsBody = document.getElementById("monthlyTotalsBody");
+        const individualMonthlyTotalsBody = document.getElementById("individualMonthlyTotalsBody");
+
+        combinedMonthlyTotalsBody.innerHTML = "";
+        individualMonthlyTotalsBody.innerHTML = "";
+
+        let salesTotalsByPerson = {
+            "anna": Array(12).fill(0),
+            "alma": Array(12).fill(0),
+            "jennifer": Array(12).fill(0),
+            "juice": Array(12).fill(0), // Added Juice
+            "combined": Array(12).fill(0)
+        };
+
+        salesData.forEach((record) => {
+            const person = record.person;
+            const monthIndex = new Date(record.date).getMonth();
+
+            salesTotalsByPerson[person][monthIndex] += record.amount - record.expenses; // Subtract expenses
+            salesTotalsByPerson["combined"][monthIndex] += record.amount - record.expenses; // Subtract expenses
+        });
+
+        for (const person in salesTotalsByPerson) {
+            const totalSales = salesTotalsByPerson[person].reduce((total, amount) => total + amount, 0);
+
+            if (totalSales > 0) {
                 const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${record.date}</td>
-                    <td>${record.person}</td>
-                    <td>${record.amount}</td>
-                    <td>${record.expenses}</td>
-                    <td>${record.result}</td>
-                    <td><button onclick="deleteSales(${index})">Delete</button></td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
-        
-        function showMonthlyResults() {
-            updateMonthlyTotalsTable();
-            const monthlyResults = document.getElementById("monthlyResults");
-            monthlyResults.classList.add("show-monthly");
-        }
-        
-        function updateMonthlyTotalsTable() {
-            const salesData = JSON.parse(localStorage.getItem("salesData")) || [];
-            const combinedMonthlyTotalsBody = document.getElementById("monthlyTotalsBody");
-            const individualMonthlyTotalsBody = document.getElementById("individualMonthlyTotalsBody");
-            
-            combinedMonthlyTotalsBody.innerHTML = "";
-            individualMonthlyTotalsBody.innerHTML = "";
-    
-            let salesTotalsByPerson = {
-                "anna": Array(12).fill(0),
-                "alma": Array(12).fill(0),
-                "jennifer": Array(12).fill(0),
-                "combined": Array(12).fill(0)
-            };
-    
-            salesData.forEach((record) => {
-                const person = record.person;
-                const monthIndex = new Date(record.date).getMonth();
-    
-                salesTotalsByPerson[person][monthIndex] += record.amount - record.expenses;
-                salesTotalsByPerson["combined"][monthIndex] += record.amount - record.expenses;
-            });
-    
-            for (const person in salesTotalsByPerson) {
-                const totalSales = salesTotalsByPerson[person].reduce((total, amount) => total + amount, 0);
-    
-                if (totalSales > 0) {
-                    const row = document.createElement("tr");
-                    if (person === "combined") {
-                        row.innerHTML = `<td>Combined Total</td>${getMonthlyTotalCells(salesTotalsByPerson[person])}`;
-                        combinedMonthlyTotalsBody.appendChild(row);
-                    } else {
-                        row.innerHTML = `<td>${person}</td>${getMonthlyTotalCells(salesTotalsByPerson[person])}`;
-                        individualMonthlyTotalsBody.appendChild(row);
-                    }
+                if (person === "combined") {
+                    row.innerHTML = `<td>Combined Total</td>${getMonthlyTotalCells(salesTotalsByPerson[person])}`;
+                    combinedMonthlyTotalsBody.appendChild(row);
+                } else {
+                    row.innerHTML = `<td>${person}</td>${getMonthlyTotalCells(salesTotalsByPerson[person])}`;
+                    individualMonthlyTotalsBody.appendChild(row);
                 }
             }
         }
-        
-        function getMonthlyTotalCells(monthlyTotals) {
-            let cells = '';
-            for (const total of monthlyTotals) {
-                cells += `<td>${total.toFixed(2)}</td>`;
-            }
-            return cells;
+    }
+
+    function getMonthlyTotalCells(monthlyTotals) {
+        let cells = '';
+        for (const total of monthlyTotals) {
+            cells += `<td>${total.toFixed(2)}</td>`;
         }
-        
-        function goToIndex() {
-            window.location.href = "index.html"
+        return cells;
+    }
+
+    function goToIndex() {
+        window.location.href = "index.html"
+    }
+
+    updateSalesTable(); // Initial update of sales table
+
+    /* Calculator Functions */
+    function appendToCalcDisplay(value) {
+        const calcDisplay = document.getElementById('calcDisplay');
+        calcDisplay.value += value;
+    }
+
+    function clearCalcDisplay() {
+        const calcDisplay = document.getElementById('calcDisplay');
+        calcDisplay.value = '';
+    }
+
+    function calculate() {
+        const calcDisplay = document.getElementById('calcDisplay');
+        try {
+            calcDisplay.value = eval(calcDisplay.value);
+        } catch (error) {
+            calcDisplay.value = 'Error';
         }
-        
-        updateSalesTable(); // Initial update of sales table
-    </script>
+    }
+
+    /* Real-Time Clock */
+    function updateTime() {
+        const clock = document.getElementById('clock');
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();
+        clock.textContent = timeString;
+    }
+
+    setInterval(updateTime, 1000);
+    updateTime(); // Initial update of the clock
+</script>
+
 </body>
 </html>
