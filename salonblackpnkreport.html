@@ -199,13 +199,28 @@
         </div>
         
         <div class="form-group">
-            <label for="salesAmount">Enter Sales Amount:</label>
+            <label for="salesAmount">Sales Amount:</label>
             <input type="number" id="salesAmount">
         </div>
         
         <div class="form-group">
-            <label for="expensesAmount">Enter Expenses Amount:</label>
-            <input type="number" id="expensesAmount">
+            <label for="waterExpenses">Water Bill Expenses:</label>
+            <input type="number" id="waterExpenses">
+        </div>
+        
+        <div class="form-group">
+            <label for="electricityExpenses">Electricity Expenses:</label>
+            <input type="number" id="electricityExpenses">
+        </div>
+
+        <div class="form-group">
+            <label for="foodTransportExpenses">Food and Transportation Expenses:</label>
+            <input type="number" id="foodTransportExpenses">
+        </div>
+
+        <div class="form-group">
+            <label for="parlorBudget">Parlor Budget:</label>
+            <input type="number" id="parlorBudget">
         </div>
 
         <div class="form-group">
@@ -220,8 +235,11 @@
                         <th>Date</th>
                         <th>Salesperson</th>
                         <th>Sales Amount</th>
-                        <th>Expenses</th> <!-- Added Expenses Column -->
-                        <th>Result</th> <!-- Added Result Column -->
+                        <th>Water Bill Expenses</th>
+                        <th>Electricity Expenses</th>
+                        <th>Food and Transport Expenses</th>
+                        <th>Parlor Budget</th>
+                        <th>Result</th>
                         <th>Delete</th>
                     </tr>
                 </thead>
@@ -330,7 +348,10 @@
         const salesPerson = document.getElementById("salesPerson").value;
         const salesDate = document.getElementById("salesDate").value;
         const salesAmount = parseFloat(document.getElementById("salesAmount").value);
-        const expensesAmount = parseFloat(document.getElementById("expensesAmount").value); // Added Expenses Amount
+        const waterExpenses = parseFloat(document.getElementById("waterExpenses").value);
+        const electricityExpenses = parseFloat(document.getElementById("electricityExpenses").value);
+        const foodTransportExpenses = parseFloat(document.getElementById("foodTransportExpenses").value);
+        const parlorBudget = parseFloat(document.getElementById("parlorBudget").value);
 
         if (!salesDate || isNaN(salesAmount)) {
             alert("Please enter valid data.");
@@ -341,7 +362,10 @@
             date: salesDate,
             person: salesPerson,
             amount: salesAmount,
-            expenses: expensesAmount // Added Expenses Amount
+            waterExpenses: waterExpenses,
+            electricityExpenses: electricityExpenses,
+            foodTransportExpenses: foodTransportExpenses,
+            parlorBudget: parlorBudget
         };
 
         let salesData = JSON.parse(localStorage.getItem("salesData")) || [];
@@ -366,12 +390,16 @@
 
         salesData.forEach((record, index) => {
             const row = document.createElement("tr");
+            const result = record.amount - (record.waterExpenses + record.electricityExpenses + record.foodTransportExpenses + record.parlorBudget);
             row.innerHTML = `
                 <td>${record.date}</td>
                 <td>${record.person}</td>
                 <td>${record.amount}</td>
-                <td>${record.expenses}</td> <!-- Added Expenses Column -->
-                <td>${record.amount - record.expenses}</td> <!-- Added Result Column -->
+                <td>${record.waterExpenses}</td>
+                <td>${record.electricityExpenses}</td>
+                <td>${record.foodTransportExpenses}</td>
+                <td>${record.parlorBudget}</td>
+                <td>${result}</td>
                 <td><button onclick="deleteSales(${index})">Delete</button></td>
             `;
             tableBody.appendChild(row);
@@ -396,7 +424,7 @@
             "anna": Array(12).fill(0),
             "alma": Array(12).fill(0),
             "jennifer": Array(12).fill(0),
-            "juice": Array(12).fill(0), // Added Juice
+            "juice": Array(12).fill(0),
             "combined": Array(12).fill(0)
         };
 
@@ -404,8 +432,11 @@
             const person = record.person;
             const monthIndex = new Date(record.date).getMonth();
 
-            salesTotalsByPerson[person][monthIndex] += record.amount - record.expenses; // Subtract expenses
-            salesTotalsByPerson["combined"][monthIndex] += record.amount - record.expenses; // Subtract expenses
+            const totalExpenses = record.waterExpenses + record.electricityExpenses + record.foodTransportExpenses + record.parlorBudget;
+            const result = record.amount - totalExpenses;
+
+            salesTotalsByPerson[person][monthIndex] += result;
+            salesTotalsByPerson["combined"][monthIndex] += result;
         });
 
         for (const person in salesTotalsByPerson) {
@@ -433,7 +464,7 @@
     }
 
     function goToIndex() {
-        window.location.href = "index.html"
+        window.location.href = "index.html";
     }
 
     updateSalesTable(); // Initial update of sales table
@@ -469,6 +500,5 @@
     setInterval(updateTime, 1000);
     updateTime(); // Initial update of the clock
 </script>
-
 </body>
 </html>
