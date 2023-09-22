@@ -14,7 +14,7 @@
             min-height: 100vh;
         }
         .container {
-            width: 400px;
+            width: 800px;
             background-color: #f9f9f9;
             border-radius: 10px;
             padding: 20px;
@@ -60,20 +60,29 @@
             cursor: pointer;
             margin-right: 5px;
         }
-        .report {
-            border: 1px solid #ccc;
-            padding: 15px;
+        .reports {
             margin-top: 20px;
-            font-size: 14px;
-            display: none;
-            opacity: 0;
-            max-height: 200px; /* Set a maximum height for the report div */
-            overflow-y: auto; /* Add a vertical scroll bar when content overflows */
         }
-        .report strong {
-            display: block;
-            font-size: 18px;
-            margin-bottom: 10px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            padding: 3px 10px;
+            margin-left: 10px;
         }
         .date-time {
             text-align: center;
@@ -109,14 +118,6 @@
             cursor: pointer;
             margin-left: 10px;
         }
-        .delete-button {
-            background-color: #f44336;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            padding: 3px 10px;
-        }
     </style>
 </head>
 <body>
@@ -141,15 +142,55 @@
         <div class="button-group">
             <button onclick="generateDailyReport()">Generate Daily Report</button>
         </div>
-        <div class="report hide" id="daily-report"></div>
+        <div class="reports hide" id="daily-reports">
+            <h2>Daily Reports</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Total Profit (&#x20B1;)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="daily-report-table-body">
+                </tbody>
+            </table>
+        </div>
         <div class="button-group">
             <button onclick="generateMonthlyReport()">Generate Monthly Report</button>
         </div>
-        <div class="report hide" id="monthly-report"></div>
+        <div class="reports hide" id="monthly-reports">
+            <h2>Monthly Reports</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Month</th>
+                        <th>Total Profit (&#x20B1;)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="monthly-report-table-body">
+                </tbody>
+            </table>
+        </div>
         <div class="button-group">
             <button onclick="generateYearlyReport()">Generate Yearly Report</button>
         </div>
-        <div class="report hide" id="yearly-report"></div>
+        <div class="reports hide" id="yearly-reports">
+            <h2>Yearly Reports</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Total Profit (&#x20B1;)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="yearly-report-table-body">
+                </tbody>
+            </table>
+        </div>
         <div class="date-time" id="date-time"></div>
         <div class="button-group">
             <a href="index.html" class="back-button">Back</a>
@@ -236,32 +277,30 @@
         }
 
         function generateDailyReport() {
-            var dailyReportDiv = document.getElementById("daily-report");
-            var dailyReport = "";
+            var dailyReportsDiv = document.getElementById("daily-reports");
+            var dailyReportTableBody = document.getElementById("daily-report-table-body");
+            dailyReportTableBody.innerHTML = ""; // Clear previous reports
 
             for (var date in dailyReports) {
-                dailyReport += "<div>";
-                dailyReport += "<strong>Date: " + date + "</strong>";
-                dailyReport += `<button class="delete-button" onclick="deleteDailyReport('${date}')">Delete</button><br>`;
-                dailyReport += "Total Profit: &#x20B1;" + dailyReports[date].totalProfit + "<br><br>";
-                dailyReport += "</div>";
+                var row = document.createElement("tr");
+                row.innerHTML = `<td>${date}</td><td>${dailyReports[date].totalProfit}</td>` +
+                    `<td><button class="delete-button" onclick="deleteDailyReport('${date}')">Delete</button></td>`;
+                dailyReportTableBody.appendChild(row);
             }
 
-            hideReports();
-            dailyReportDiv.innerHTML = dailyReport;
-            dailyReportDiv.classList.remove("hide");
-            fadeInEffect(dailyReportDiv);
+            dailyReportsDiv.classList.remove("hide");
+            fadeInEffect(dailyReportsDiv);
         }
 
         function generateMonthlyReport() {
-            var monthlyReportDiv = document.getElementById("monthly-report");
-            var monthlyReport = "";
+            var monthlyReportsDiv = document.getElementById("monthly-reports");
+            var monthlyReportTableBody = document.getElementById("monthly-report-table-body");
+            monthlyReportTableBody.innerHTML = ""; // Clear previous reports
 
             for (var date in dailyReports) {
                 var parts = date.split("-");
                 var year = parts[0];
                 var month = parts[1];
-                var totalProfit = parseFloat(dailyReports[date].totalProfit);
 
                 if (!monthlyReports[year]) {
                     monthlyReports[year] = {};
@@ -271,49 +310,43 @@
                     monthlyReports[year][month] = 0;
                 }
 
-                monthlyReports[year][month] += totalProfit;
+                monthlyReports[year][month] += parseFloat(dailyReports[date].totalProfit);
             }
 
-            hideReports();
-            monthlyReport += "<strong>Monthly Report</strong><br>";
             for (var year in monthlyReports) {
-                monthlyReport += "<strong>" + year + "</strong><br>";
                 for (var month in monthlyReports[year]) {
-                    var monthName = getMonthName(parseInt(month));
-                    monthlyReport += monthName + ": &#x20B1;" + monthlyReports[year][month].toFixed(2);
-                    monthlyReport += `<button class="delete-button" onclick="deleteMonthlyReport('${year}', '${month}')">Delete</button><br>`;
+                    var row = document.createElement("tr");
+                    row.innerHTML = `<td>${year}</td><td>${getMonthName(month)}</td>` +
+                        `<td>${monthlyReports[year][month].toFixed(2)}</td>` +
+                        `<td><button class="delete-button" onclick="deleteMonthlyReport('${year}', '${month}')">Delete</button></td>`;
+                    monthlyReportTableBody.appendChild(row);
                 }
             }
 
-            monthlyReportDiv.innerHTML = monthlyReport;
-            monthlyReportDiv.classList.remove("hide");
-            fadeInEffect(monthlyReportDiv);
+            monthlyReportsDiv.classList.remove("hide");
+            fadeInEffect(monthlyReportsDiv);
         }
 
         function generateYearlyReport() {
-            var yearlyReportDiv = document.getElementById("yearly-report");
-            var yearlyReport = "";
+            var yearlyReportsDiv = document.getElementById("yearly-reports");
+            var yearlyReportTableBody = document.getElementById("yearly-report-table-body");
+            yearlyReportTableBody.innerHTML = ""; // Clear previous reports
 
             for (var year in monthlyReports) {
-                if (!yearlyReports[year]) {
-                    yearlyReports[year] = 0;
-                }
+                var totalProfit = 0;
 
                 for (var month in monthlyReports[year]) {
-                    yearlyReports[year] += monthlyReports[year][month];
+                    totalProfit += parseFloat(monthlyReports[year][month]);
                 }
+
+                var row = document.createElement("tr");
+                row.innerHTML = `<td>${year}</td><td>${totalProfit.toFixed(2)}</td>` +
+                    `<td><button class="delete-button" onclick="deleteYearlyReport('${year}')">Delete</button></td>`;
+                yearlyReportTableBody.appendChild(row);
             }
 
-            hideReports();
-            yearlyReport += "<strong>Yearly Report</strong><br>";
-            for (var year in yearlyReports) {
-                yearlyReport += "<strong>" + year + "</strong>: &#x20B1;" + yearlyReports[year].toFixed(2);
-                yearlyReport += `<button class="delete-button" onclick="deleteYearlyReport('${year}')">Delete</button><br><br>`;
-            }
-
-            yearlyReportDiv.innerHTML = yearlyReport;
-            yearlyReportDiv.classList.remove("hide");
-            fadeInEffect(yearlyReportDiv);
+            yearlyReportsDiv.classList.remove("hide");
+            fadeInEffect(yearlyReportsDiv);
         }
 
         function deleteDailyReport(date) {
@@ -328,16 +361,14 @@
         }
 
         function deleteYearlyReport(year) {
-            delete yearlyReports[year];
+            delete monthlyReports[year];
             generateYearlyReport();
         }
 
         function hideReports() {
-            var reportDivs = document.querySelectorAll(".report");
+            var reportDivs = document.querySelectorAll(".reports");
             for (var i = 0; i < reportDivs.length; i++) {
-                if (reportDivs[i].id !== "total") {
-                    reportDivs[i].classList.add("hide");
-                }
+                reportDivs[i].classList.add("hide");
             }
         }
 
