@@ -67,6 +67,8 @@
             font-size: 14px;
             display: none;
             opacity: 0;
+            max-height: 200px; /* Set a maximum height for the report div */
+            overflow-y: auto; /* Add a vertical scroll bar when content overflows */
         }
         .report strong {
             display: block;
@@ -79,7 +81,6 @@
             margin-top: 20px;
             color: #777;
         }
-        /* Add a class to hide report divs */
         .hide {
             display: none;
         }
@@ -90,7 +91,6 @@
             text-decoration: none;
             border-radius: 3px;
         }
-        /* Additional styles for the notification */
         .notification {
             position: fixed;
             bottom: 20px;
@@ -108,6 +108,14 @@
             border: none;
             cursor: pointer;
             margin-left: 10px;
+        }
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            padding: 3px 10px;
         }
     </style>
 </head>
@@ -132,17 +140,14 @@
         <div id="total" class="report"></div>
         <div class="button-group">
             <button onclick="generateDailyReport()">Generate Daily Report</button>
-            <button onclick="clearDailyReport()">Clear Daily Report</button>
         </div>
         <div class="report hide" id="daily-report"></div>
         <div class="button-group">
             <button onclick="generateMonthlyReport()">Generate Monthly Report</button>
-            <button onclick="clearMonthlyReport()">Clear Monthly Report</button>
         </div>
         <div class="report hide" id="monthly-report"></div>
         <div class="button-group">
             <button onclick="generateYearlyReport()">Generate Yearly Report</button>
-            <button onclick="clearYearlyReport()">Clear Yearly Report</button>
         </div>
         <div class="report hide" id="yearly-report"></div>
         <div class="date-time" id="date-time"></div>
@@ -171,7 +176,6 @@
                 totalProfit: total.toFixed(2)
             };
 
-            // Store the updated dailyReports in localStorage
             try {
                 localStorage.setItem('dailyReports', JSON.stringify(dailyReports));
             } catch (error) {
@@ -186,7 +190,6 @@
             }
         }
 
-        // Call this function when the page loads
         loadStoredData();
 
         function showStorageNotification(usedStorage, totalStorage) {
@@ -205,19 +208,18 @@
 
             setTimeout(function() {
                 document.body.removeChild(notification);
-            }, 8000); // Display the notification for 8 seconds
+            }, 8000);
         }
 
         function checkStorageCapacity() {
-            var usedStorage = (JSON.stringify(localStorage)).length / 1024 / 1024; // Convert to MB
-            var totalStorage = (1024 * 1024 * 5); // 5 MB (example limit for localStorage)
+            var usedStorage = (JSON.stringify(localStorage)).length / 1024 / 1024;
+            var totalStorage = (1024 * 1024 * 5);
 
-            if (usedStorage >= totalStorage * 0.8) { // Display notification when 80% of storage is used
+            if (usedStorage >= totalStorage * 0.8) {
                 showStorageNotification(usedStorage.toFixed(2), totalStorage);
             }
         }
 
-        // Call this function to check storage capacity when necessary
         checkStorageCapacity();
 
         function fadeInEffect(element) {
@@ -238,8 +240,11 @@
             var dailyReport = "";
 
             for (var date in dailyReports) {
-                dailyReport += "<strong>Date: " + date + "</strong><br>";
+                dailyReport += "<div>";
+                dailyReport += "<strong>Date: " + date + "</strong>";
+                dailyReport += `<button class="delete-button" onclick="deleteDailyReport('${date}')">Delete</button><br>`;
                 dailyReport += "Total Profit: &#x20B1;" + dailyReports[date].totalProfit + "<br><br>";
+                dailyReport += "</div>";
             }
 
             hideReports();
@@ -275,7 +280,8 @@
                 monthlyReport += "<strong>" + year + "</strong><br>";
                 for (var month in monthlyReports[year]) {
                     var monthName = getMonthName(parseInt(month));
-                    monthlyReport += monthName + ": &#x20B1;" + monthlyReports[year][month].toFixed(2) + "<br>";
+                    monthlyReport += monthName + ": &#x20B1;" + monthlyReports[year][month].toFixed(2);
+                    monthlyReport += `<button class="delete-button" onclick="deleteMonthlyReport('${year}', '${month}')">Delete</button><br>`;
                 }
             }
 
@@ -301,7 +307,8 @@
             hideReports();
             yearlyReport += "<strong>Yearly Report</strong><br>";
             for (var year in yearlyReports) {
-                yearlyReport += "<strong>" + year + "</strong>: &#x20B1;" + yearlyReports[year].toFixed(2) + "<br>";
+                yearlyReport += "<strong>" + year + "</strong>: &#x20B1;" + yearlyReports[year].toFixed(2);
+                yearlyReport += `<button class="delete-button" onclick="deleteYearlyReport('${year}')">Delete</button><br><br>`;
             }
 
             yearlyReportDiv.innerHTML = yearlyReport;
@@ -309,26 +316,20 @@
             fadeInEffect(yearlyReportDiv);
         }
 
-        function clearDailyReport() {
-            dailyReports = {};
-            var dailyReportDiv = document.getElementById("daily-report");
-            dailyReportDiv.innerHTML = "";
-            dailyReportDiv.classList.add("hide");
-            localStorage.removeItem('dailyReports');
+        function deleteDailyReport(date) {
+            delete dailyReports[date];
+            generateDailyReport();
+            localStorage.setItem('dailyReports', JSON.stringify(dailyReports));
         }
 
-        function clearMonthlyReport() {
-            monthlyReports = {};
-            var monthlyReportDiv = document.getElementById("monthly-report");
-            monthlyReportDiv.innerHTML = "";
-            monthlyReportDiv.classList.add("hide");
+        function deleteMonthlyReport(year, month) {
+            delete monthlyReports[year][month];
+            generateMonthlyReport();
         }
 
-        function clearYearlyReport() {
-            yearlyReports = {};
-            var yearlyReportDiv = document.getElementById("yearly-report");
-            yearlyReportDiv.innerHTML = "";
-            yearlyReportDiv.classList.add("hide");
+        function deleteYearlyReport(year) {
+            delete yearlyReports[year];
+            generateYearlyReport();
         }
 
         function hideReports() {
